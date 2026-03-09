@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+// prisma/schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+}
+
+
+//database schema for general info and personal info updates
+model Resume {
+  id String @id @default(cuid())
+  userId String 
+
+  title String?
+  description  String?
+
+  photoUrl  String?
+
+  colorHex  String @default("#000000")
+  
+  borderStyle  String @default("squircle")
+  
+  summary  String?
+  
+  firstName  String?
+  lastName  String?
+  jobTitle  String?
+  city  String?
+  country  String?
+  phone  String?
+  email  String?
+
+  workExperiences WorkExperience []
+  educations Education []
+
+  skills String[] //simple array to store skills data does not need its own object model
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+  
+
+  @@map("resumes") // “In my code, I want to call this model Resume, but in the real database the table should be called resumes
+
+}
+
+
+//database schema for work experience info updates, since for a single resume we have multiple work experience, create a distinct database table for work experiences for any resume created
+//we connect Resume and Work Experience using the resume id and prisma relation key word
+model WorkExperience {
+  id String @id @default(cuid())
+
+
+  position String?
+  company  String?
+  startDate  DateTime?
+  endDate  DateTime?
+  description  String?
+  
+  resumeId  String //cannot be optional,links between database tables are non-null, prisma rule != String?❌
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("work_experiences")
+}
+
+//database schema for education info updates
+//we connect Resume and Work Experience using the resume id and prisma relation key word
+model Education {
+  id String @id @default(cuid())
+
+
+  degree String?
+  school  String?
+  startDate  DateTime?
+  endDate  DateTime?
+
+  resumeId  String
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("educations")
+}
+
+
+//schema definition for stripe user subscription
+model UserSubscription {
+  id String @id @default(cuid())
+  userId String @unique
+  stripeCustomerId String @unique
+  stripeSubscriptionId String @unique
+  stripePriceId String
+  stripeCurrentPeriodEnd DateTime
+  stripeCancelAtPeriodEnd Boolean @default(false)
+
+
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("user_subscriptions")
+}
