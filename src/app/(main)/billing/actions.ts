@@ -2,7 +2,7 @@
 
 import stripe from "@/lib/stripe";
 import { currentUser } from "@clerk/nextjs/server";
-import { env } from "process";
+import { env } from "@/env";
 
 //connect to stripe billing portal, then redirect to our billing file when done
 export async function createCustomerPortalSession() {
@@ -25,6 +25,8 @@ export async function createCustomerPortalSession() {
     customer: stripeCustomerId,
     return_url: `${env.NEXT_PUBLIC_BASE_URL}/billing`,
   });
+
+  console.log(session.return_url);
 
   console.log(session);
 

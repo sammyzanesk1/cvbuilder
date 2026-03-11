@@ -50,7 +50,7 @@ export default async function Page() {
         <>
           {subscription.stripeCancelAtPeriodEnd && (
             <p className="text-destructive">
-              Your subscription will be cancelled on{""}
+              Your subscription will be cancelled on{" "}
               {formatDate(subscription.stripeCurrentPeriodEnd, "MMMM dd, yyyy")}
             </p>
           )}

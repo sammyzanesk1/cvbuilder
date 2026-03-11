@@ -79,7 +79,9 @@ async function handleSessionCompleted(session: Stripe.Checkout.Session) {
    *    This line then "overwrites" the old, broken ID in Clerk with the new working one.
    */
 
-  (await clerkClient()).users.updateUserMetadata(userId, {
+  await (
+    await clerkClient()
+  ).users.updateUserMetadata(userId, {
     privateMetadata: {
       stripeCustomerId: session.customer as string,
     },
